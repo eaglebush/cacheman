@@ -19,7 +19,11 @@ func New(max int) *CacheManager {
 	if max == 0 {
 		max = 25165824
 	}
-	return &CacheManager{MaxLength: max}
+	return &CacheManager{
+		MaxLength: max,
+		cache:     fastcache.New(max),
+		keys:      make([]string, 0),
+	}
 }
 
 // Set the cache
