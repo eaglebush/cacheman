@@ -1,6 +1,7 @@
 package cacheman
 
 import (
+	"errors"
 	"strings"
 	"sync"
 
@@ -27,7 +28,7 @@ func New(max int) *CacheManager {
 }
 
 // Set the cache
-func (cm *CacheManager) Set(key string, value []byte) {
+func (cm *CacheManager) Set(key string, value []byte) error {
 
 	if cm.keys == nil {
 		cm.keys = make([]string, 1)
@@ -41,6 +42,8 @@ func (cm *CacheManager) Set(key string, value []byte) {
 	}
 
 	cm.cache.SetBig([]byte(key), value)
+
+	return nil
 }
 
 // Get - get the cache content
@@ -54,17 +57,17 @@ func (cm *CacheManager) Get(dst []byte, key string) []byte {
 }
 
 // Del - delete an item in the cache
-func (cm *CacheManager) Del(keyPattern string) {
+func (cm *CacheManager) Del(keyPattern string) error {
 
 	if keyPattern == "" {
-		return
+		return errors.New(`keyPattern empty`)
 	}
 
 	hassufx := strings.HasSuffix(keyPattern, "*")
 
 	if !hassufx {
 		cm.cache.Del([]byte(keyPattern))
-		return
+		return nil
 	}
 
 	// If the cache key has an asterisk at the end,
@@ -92,14 +95,12 @@ func (cm *CacheManager) Del(keyPattern string) {
 
 			cm.keys = make([]string, 0)           // reset size
 			cm.keys = append(cm.keys, newkeys...) // add the new keys
-			return
 		}()
 
-		return
+		return nil
 	}
 
-	return
-
+	return nil
 }
 
 // Has - check if a cache item is present in the cache
