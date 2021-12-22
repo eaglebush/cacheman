@@ -63,42 +63,35 @@ func (cm *CacheManager) Del(keyPattern string) error {
 		return errors.New(`keyPattern empty`)
 	}
 
-	hassufx := strings.HasSuffix(keyPattern, "*")
-
-	if !hassufx {
+	if hassufx := strings.HasSuffix(keyPattern, "*"); !hassufx {
 		cm.cache.Del([]byte(keyPattern))
 		return nil
 	}
 
 	// If the cache key has an asterisk at the end,
 	// we will search through the keys stored
-	if hassufx {
+	func() {
+		// We create a mutex to block changes to the keys
+		mutex := &sync.Mutex{}
 
-		func() {
-			// We create a mutex to block changes to the keys
-			mutex := &sync.Mutex{}
+		// remove the star character
+		pfx := keyPattern[0 : len(keyPattern)-1]
 
-			// remove the star character
-			pfx := keyPattern[0 : len(keyPattern)-1]
+		newkeys := make([]string, 0)
 
-			newkeys := make([]string, 0)
-
-			mutex.Lock()         // block changes to the keys while looping
-			defer mutex.Unlock() // unlock when the function returns
-			for _, v := range cm.keys {
-				if strings.HasPrefix(v, pfx) {
-					cm.cache.Del([]byte(v))
-					continue // skip adding to new keys
-				}
-				newkeys = append(newkeys, v)
+		mutex.Lock()         // block changes to the keys while looping
+		defer mutex.Unlock() // unlock when the function returns
+		for _, v := range cm.keys {
+			if strings.HasPrefix(v, pfx) {
+				cm.cache.Del([]byte(v))
+				continue // skip adding to new keys
 			}
+			newkeys = append(newkeys, v)
+		}
 
-			cm.keys = make([]string, 0)           // reset size
-			cm.keys = append(cm.keys, newkeys...) // add the new keys
-		}()
-
-		return nil
-	}
+		cm.keys = make([]string, 0)           // reset size
+		cm.keys = append(cm.keys, newkeys...) // add the new keys
+	}()
 
 	return nil
 }
