@@ -61,13 +61,13 @@ func (cm *CacheManager) Get(dst []byte, key string) []byte {
 }
 
 // GetWithErr - get the cache content with error
-func (cm *CacheManager) GetWithErr(dst []byte, key string) ([]byte, error) {
+func (cm *CacheManager) GetWithErr(key string) ([]byte, error) {
 
 	if key == "" {
 		return []byte{}, ErrKeyDoesNotExist
 	}
 
-	return cm.cache.GetBig(dst, []byte(key)), nil
+	return cm.cache.GetBig(nil, []byte(key)), nil
 }
 
 // Del - delete an item in the cache
