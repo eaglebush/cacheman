@@ -15,6 +15,10 @@ type CacheManager struct {
 	MaxLength int
 }
 
+var (
+	ErrKeyDoesNotExist error = errors.New(`Key does not exist`)
+)
+
 // New - creates a new CacheManager
 func New(max int) *CacheManager {
 	if max == 0 {
@@ -54,6 +58,16 @@ func (cm *CacheManager) Get(dst []byte, key string) []byte {
 	}
 
 	return cm.cache.GetBig(dst, []byte(key))
+}
+
+// GetWithErr - get the cache content with error
+func (cm *CacheManager) GetWithErr(dst []byte, key string) ([]byte, error) {
+
+	if key == "" {
+		return []byte{}, ErrKeyDoesNotExist
+	}
+
+	return cm.cache.GetBig(dst, []byte(key)), nil
 }
 
 // Del - delete an item in the cache
