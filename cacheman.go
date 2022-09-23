@@ -16,7 +16,7 @@ type CacheManager struct {
 }
 
 var (
-	ErrKeyDoesNotExist error = errors.New(`Key does not exist`)
+	ErrKeyDoesNotExist error = errors.New(`key does not exist`)
 )
 
 // New - creates a new CacheManager
