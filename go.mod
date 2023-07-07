@@ -2,10 +2,10 @@ module github.com/eaglebush/cacheman
 
 go 1.17
 
-require github.com/VictoriaMetrics/fastcache v1.8.0
+require github.com/VictoriaMetrics/fastcache v1.12.1
 
 require (
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
 )
