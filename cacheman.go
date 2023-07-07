@@ -8,7 +8,7 @@ import (
 	"github.com/VictoriaMetrics/fastcache"
 )
 
-// CacheManager - manage fastcache. This extends the github.com/VictoriaMetrics/fastcache to have a Del that supports wildcards
+// CacheManager manage fastcache. This extends the github.com/VictoriaMetrics/fastcache to have a Del that supports wildcards
 type CacheManager struct {
 	cache     *fastcache.Cache
 	keys      []string
@@ -22,7 +22,7 @@ var (
 	ErrKeyPatternNotSet error = errors.New(`key pattern not set`)
 )
 
-// New - creates a new CacheManager
+// New creates a new CacheManager
 func New(max int) *CacheManager {
 	if max == 0 {
 		max = 25165824
@@ -54,7 +54,7 @@ func (cm *CacheManager) Set(key string, value []byte) error {
 	return nil
 }
 
-// Get - get the cache content
+// Get the cache content
 func (cm *CacheManager) Get(dst []byte, key string) []byte {
 	if key == "" {
 		return []byte{}
@@ -63,7 +63,7 @@ func (cm *CacheManager) Get(dst []byte, key string) []byte {
 	return cm.cache.GetBig(dst, []byte(key))
 }
 
-// GetWithErr - get the cache content with error
+// GetWithErr get the cache content with error
 func (cm *CacheManager) GetWithErr(key string) ([]byte, error) {
 	if key == "" {
 		return []byte{}, ErrKeyNotSet
@@ -72,7 +72,7 @@ func (cm *CacheManager) GetWithErr(key string) ([]byte, error) {
 	return cm.cache.GetBig(nil, []byte(key)), nil
 }
 
-// Del - delete an item in the cache
+// Del deletes an item or items with the pattern in the cache
 func (cm *CacheManager) Del(keyPattern string) error {
 
 	if keyPattern == "" {
@@ -114,17 +114,17 @@ func (cm *CacheManager) Del(keyPattern string) error {
 	return nil
 }
 
-// Has - check if a cache item is present in the cache
+// Has checks if a cache item is present in the cache
 func (cm *CacheManager) Has(key string) bool {
 	return cm.cache.Has([]byte(key))
 }
 
-// Reset - reset the cache content
+// Reset resets the cache content
 func (cm *CacheManager) Reset() {
 	cm.cache.Reset()
 }
 
-// ListKeys - gets the list of keys
+// ListKeys gets the list of keys
 func (cm *CacheManager) ListKeys() []string {
 	return cm.keys
 }
