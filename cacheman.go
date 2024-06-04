@@ -34,32 +34,27 @@ func New(max int) *CacheManager {
 	}
 }
 
-// Set the cache
+// Set a value for a key
 func (cm *CacheManager) Set(key string, value []byte) error {
 	if key == "" {
 		return ErrKeyNotSet
 	}
-
 	if cm.keys == nil {
 		cm.keys = make([]string, 0)
 	}
-
 	if cm.cache == nil {
 		cm.cache = fastcache.New(cm.MaxLength)
 	}
-
 	cm.cache.SetBig([]byte(key), value)
 	cm.keys = append(cm.keys, key)
-
 	return nil
 }
 
-// Get the cache content
+// Get the value of the key from the cache
 func (cm *CacheManager) Get(dst []byte, key string) []byte {
 	if key == "" {
 		return []byte{}
 	}
-
 	return cm.cache.GetBig(dst, []byte(key))
 }
 
@@ -68,22 +63,18 @@ func (cm *CacheManager) GetWithErr(key string) ([]byte, error) {
 	if key == "" {
 		return []byte{}, ErrKeyNotSet
 	}
-
 	return cm.cache.GetBig(nil, []byte(key)), nil
 }
 
 // Del deletes an item or items with the pattern in the cache
 func (cm *CacheManager) Del(keyPattern string) error {
-
 	if keyPattern == "" {
 		return ErrKeyPatternNotSet
 	}
-
 	if hassufx := strings.HasSuffix(keyPattern, "*"); !hassufx {
 		cm.cache.Del([]byte(keyPattern))
 		return nil
 	}
-
 	// We create a mutex to block changes to the keys
 	if cm.mutex == nil {
 		cm.mutex = &sync.Mutex{}
