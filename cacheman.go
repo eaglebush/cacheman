@@ -35,7 +35,7 @@ func New(max int) *CacheManager {
 }
 
 // Set a value for a key
-func (cm *CacheManager) Set(key string, value []byte) error {
+func (cm *CacheManager) Set(key string, value []byte, exp int) error {
 	if key == "" {
 		return ErrKeyNotSet
 	}
@@ -45,6 +45,7 @@ func (cm *CacheManager) Set(key string, value []byte) error {
 	if cm.cache == nil {
 		cm.cache = fastcache.New(cm.MaxLength)
 	}
+	_ = exp
 	cm.cache.SetBig([]byte(key), value)
 	cm.keys = append(cm.keys, key)
 	return nil
